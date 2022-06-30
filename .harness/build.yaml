@@ -93,8 +93,8 @@ pipeline:
                                         type: Run
                                         spec:
                                             envVariables:
-                                                image: <+execution.steps.dockerhub.artifact-dockerhub.stepArtifacts.publishedImageArtifacts[0].imageName>
-                                                tag: <+execution.steps.dockerhub.artifact-dockerhub.stepArtifacts.publishedImageArtifacts[0].tag>
+                                                image: <+pipeline.stages.Build.spec.execution.steps.dockerhub.artifact-dockerhub.stepArtifacts.publishedImageArtifacts[0].imageName>
+                                                tag: <+pipeline.stages.Build.spec.execution.steps.dockerhub.artifact-dockerhub.stepArtifacts.publishedImageArtifacts[0].tag>
                                                 outputDir: /step-outputs/sbom
                           - step:
                                 type: S3Upload
