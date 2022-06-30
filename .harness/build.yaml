@@ -57,7 +57,7 @@ pipeline:
                                 - step:
                                       type: BuildAndPushDockerRegistry
                                       name: Publish to Github Container Registry
-                                      identifier: Publish_to_Github_Container_Registry
+                                      identifier: ghcr
                                       spec:
                                           connectorRef: Github_Container_Registry_lukehertert_org
                                           repo: ghcr.io/luke-hertert/<+stage.variables.image>
@@ -77,6 +77,22 @@ pipeline:
                                               org.opencontainers.image.description: A Harness CI plugin that uses cloud native buildpacks to build docker images.
                                               org.opencontainers.image.base.digest: todo
                                               org.opencontainers.image.base.name: index.docker.io/library/docker:dind
+                          - step:
+                                type: Run
+                                name: Generate SBOMs
+                                identifier: Generate_SBOMs
+                                spec:
+                                    connectorRef: account.Luke_Dockerhub
+                                    image: docker:dind
+                                    shell: Sh
+                                    command: |-
+                                        # install docker sbom cli plugin
+                                        curl -sSfL https://raw.githubusercontent.com/docker/sbom-cli-plugin/main/install.sh | sh -s --
+
+                                        docker sbom \
+                                            --format spdx-json \
+                                            --output sbom.json \
+                                            <+execution.steps.Publish_to_DockerHub.artifact-Publish_to_DockerHub.stepArtifacts.publishedImageArtifacts[0].imageName>:<+execution.steps.Publish_to_DockerHub.artifact-Publish_to_DockerHub.stepArtifacts.publishedImageArtifacts[0].tag>
               variables:
                   - name: container
                     type: String
@@ -87,6 +103,4 @@ pipeline:
                   - name: version
                     type: String
                     value: 1.0.0
-    connectorRef: lukehertert_GitHub_Org
     storeType: REMOTE
-    filePath: .harness/build.yaml
