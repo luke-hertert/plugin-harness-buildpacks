@@ -95,10 +95,9 @@ pipeline:
                                         type: Run
                                         spec:
                                             envVariables:
-                                                format: spdx
                                                 image: ldhertert/harness-buildpacks
                                                 tag: main-15327eef34c941fcf8f836b4baf95c39d840fb7d
-                                                outputDir: /step-outputs/sbom/<+execution.steps.sbom.identifier>
+                                                outputDir: /step-outputs/sbom
                           - step:
                                 type: S3Upload
                                 name: Upload SBOMs
