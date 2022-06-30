@@ -12,7 +12,7 @@ pipeline:
                 build:
                     type: branch
                     spec:
-                        branch: <+stage.variables.branch>
+                        branch: main
     stages:
         - stage:
               name: Build
@@ -39,7 +39,4 @@ pipeline:
                                     repo: ldhertert/harness-buildpacks
                                     tags:
                                         - dev-<+codebase.commitSha>
-              variables:
-                  - name: branch
-                    type: String
-                    value: main
+              variables: []
