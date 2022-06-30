@@ -30,6 +30,21 @@ pipeline:
                           os: Linux
                   execution:
                       steps:
+                          - step:
+                                name: Docker build
+                                identifier: Docker_build
+                                template:
+                                    templateRef: drone_docker
+                                    versionLabel: v1
+                                    templateInputs:
+                                        type: Plugin
+                                        spec:
+                                            connectorRef: account.Luke_Dockerhub
+                                            settings:
+                                                tags: <+codebase.branch>-<+codebase.commitSha>
+                                                username: ldhertert
+                                                repo: ldhertert/
+                                                password: <+secrets.getValue("account.Luke_Dockerhub_Password")>
                           - parallel:
                                 - step:
                                       type: BuildAndPushDockerRegistry
