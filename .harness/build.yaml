@@ -98,6 +98,7 @@ pipeline:
                                                 format: spdx
                                                 image: ldhertert/harness-buildpacks
                                                 tag: main-15327eef34c941fcf8f836b4baf95c39d840fb7d
+                                                outputDir: /step-outputs/<+stage.identifier>/<+execution.steps.sbom.identifier>
                   serviceDependencies:
                       - identifier: dind
                         name: dind
