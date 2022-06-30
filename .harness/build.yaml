@@ -56,7 +56,6 @@ pipeline:
                                               org.opencontainers.image.base.name: index.docker.io/library/docker:dind
                                       when:
                                           stageStatus: Success
-                                          condition: <+pipeline.name> == "roger"
                                       failureStrategies: []
                                 - step:
                                       type: BuildAndPushDockerRegistry
@@ -83,7 +82,6 @@ pipeline:
                                               org.opencontainers.image.base.name: index.docker.io/library/docker:dind
                                       when:
                                           stageStatus: Success
-                                          condition: <+pipeline.name> == "roger"
                                       failureStrategies: []
                           - step:
                                 name: Generate SBOM
@@ -95,18 +93,19 @@ pipeline:
                                         type: Run
                                         spec:
                                             envVariables:
-                                                image: ldhertert/harness-buildpacks
-                                                tag: main-15327eef34c941fcf8f836b4baf95c39d840fb7d
+                                                image: <+execution.steps.dockerhub.artifact-dockerhub.stepArtifacts.publishedImageArtifacts[0].imageName>
+                                                tag: <+execution.steps.dockerhub.artifact-dockerhub.stepArtifacts.publishedImageArtifacts[0].tag>
                                                 outputDir: /step-outputs/sbom
                           - step:
                                 type: S3Upload
                                 name: Upload SBOMs
-                                identifier: Upload_SBOMs
+                                identifier: uploadSBOM
                                 spec:
                                     connectorRef: Harness_AWS
                                     region: us-east-1
                                     bucket: luke-artifacts
                                     sourcePath: /step-outputs/**/*.json
+                                    target: <+pipeline.identifier>/<+pipeline.executionId>/<+stage.identifier>
                                 failureStrategies: []
                   serviceDependencies:
                       - identifier: dind
