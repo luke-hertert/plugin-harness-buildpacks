@@ -37,19 +37,22 @@ pipeline:
                                       identifier: Publish_to_DockerHub
                                       spec:
                                           connectorRef: account.Luke_Dockerhub
-                                          repo: ldhertert/harness-buildpacks
+                                          repo: ldhertert/<+stage.variables.image>
                                           tags:
-                                              - dev-<+codebase.commitSha>
+                                              - <+codebase.branch>-<+codebase.commitSha>
                                 - step:
                                       type: BuildAndPushDockerRegistry
                                       name: Publish to Github Container Registry
                                       identifier: Publish_to_Github_Container_Registry
                                       spec:
                                           connectorRef: Github_Container_Registry_lukehertert_org
-                                          repo: ghcr.io/luke-hertert/harness-buildpacks
+                                          repo: ghcr.io/luke-hertert/<+stage.variables.image>
                                           tags:
                                               - <+codebase.branch>-<+codebase.commitSha>
               variables:
                   - name: container
                     type: String
                     value: docker
+                  - name: image
+                    type: String
+                    value: harness-buildpacks
