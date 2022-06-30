@@ -40,6 +40,20 @@ pipeline:
                                           repo: ldhertert/<+stage.variables.image>
                                           tags:
                                               - <+codebase.branch>-<+codebase.commitSha>
+                                          labels:
+                                              org.opencontainers.image.created: <+pipeline.startTs>
+                                              org.opencontainers.image.authors: luke.hertert@harness.io
+                                              org.opencontainers.image.url: https://hub.docker.com/repository/docker/ldhertert/harness-buildpacks
+                                              org.opencontainers.image.documentation: https://github.com/luke-hertert/harness-buildpacks#readme
+                                              org.opencontainers.image.source: https://github.com/luke-hertert/harness-buildpacks
+                                              org.opencontainers.image.version: <+stage.variables.version>
+                                              org.opencontainers.image.revision: <+codebase.commitSha>
+                                              org.opencontainers.image.vendor: Harness
+                                              org.opencontainers.image.licenses: Apache 2.0
+                                              org.opencontainers.image.title: Harness Buildpack CI plugin
+                                              org.opencontainers.image.description: A Harness CI plugin that uses cloud native buildpacks to build docker images.
+                                              org.opencontainers.image.base.digest: todo
+                                              org.opencontainers.image.base.name: index.docker.io/library/docker:dind
                                 - step:
                                       type: BuildAndPushDockerRegistry
                                       name: Publish to Github Container Registry
@@ -49,6 +63,20 @@ pipeline:
                                           repo: ghcr.io/luke-hertert/<+stage.variables.image>
                                           tags:
                                               - <+codebase.branch>-<+codebase.commitSha>
+                                          labels:
+                                              org.opencontainers.image.created: <+pipeline.startTs>
+                                              org.opencontainers.image.authors: luke.hertert@harness.io
+                                              org.opencontainers.image.url: https://github.com/luke-hertert/harness-buildpacks/pkgs/container/harness-buildpacks
+                                              org.opencontainers.image.documentation: https://github.com/luke-hertert/harness-buildpacks#readme
+                                              org.opencontainers.image.source: https://github.com/luke-hertert/harness-buildpacks
+                                              org.opencontainers.image.version: <+stage.variables.version>
+                                              org.opencontainers.image.revision: <+codebase.commitSha>
+                                              org.opencontainers.image.vendor: Harness
+                                              org.opencontainers.image.licenses: Apache 2.0
+                                              org.opencontainers.image.title: Harness Buildpack CI plugin
+                                              org.opencontainers.image.description: A Harness CI plugin that uses cloud native buildpacks to build docker images.
+                                              org.opencontainers.image.base.digest: todo
+                                              org.opencontainers.image.base.name: index.docker.io/library/docker:dind
               variables:
                   - name: container
                     type: String
@@ -56,3 +84,6 @@ pipeline:
                   - name: image
                     type: String
                     value: harness-buildpacks
+                  - name: version
+                    type: String
+                    value: 1.0.0
