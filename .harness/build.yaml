@@ -9,7 +9,10 @@ pipeline:
             codebase:
                 connectorRef: lukehertert_GitHub_Org
                 repoName: harness-buildpacks
-                build: <+input>
+                build:
+                    type: branch
+                    spec:
+                        branch: <+stage.variables.branch>
     stages:
         - stage:
               name: Build
@@ -36,3 +39,7 @@ pipeline:
                                     repo: ldhertert/harness-buildpacks
                                     tags:
                                         - dev-<+codebase.commitSha>
+              variables:
+                  - name: branch
+                    type: String
+                    value: main
