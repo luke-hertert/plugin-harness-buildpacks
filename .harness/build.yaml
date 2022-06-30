@@ -39,4 +39,7 @@ pipeline:
                                     repo: ldhertert/harness-buildpacks
                                     tags:
                                         - dev-<+codebase.commitSha>
-              variables: []
+              variables:
+                  - name: container
+                    type: String
+                    value: docker
