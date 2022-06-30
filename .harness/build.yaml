@@ -98,7 +98,7 @@ pipeline:
                                                 format: spdx
                                                 image: ldhertert/harness-buildpacks
                                                 tag: main-15327eef34c941fcf8f836b4baf95c39d840fb7d
-                                                outputDir: /step-outputs/<+stage.identifier>/<+execution.steps.sbom.identifier>
+                                                outputDir: /step-outputs/sbom/<+execution.steps.sbom.identifier>
                           - step:
                                 type: S3Upload
                                 name: Upload SBOMs
@@ -107,7 +107,7 @@ pipeline:
                                     connectorRef: Harness_AWS
                                     region: us-east-1
                                     bucket: luke-artifacts
-                                    sourcePath: /step-output/**/*.json
+                                    sourcePath: /step-outputs/**/*.json
                                 failureStrategies: []
                   serviceDependencies:
                       - identifier: dind
