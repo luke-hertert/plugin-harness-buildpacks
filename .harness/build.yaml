@@ -1,0 +1,38 @@
+pipeline:
+    name: Harness Buildpacks Plugin Build
+    identifier: Harness_Buildpacks_Plugin_Build
+    projectIdentifier: Plugins
+    orgIdentifier: default
+    tags: {}
+    properties:
+        ci:
+            codebase:
+                connectorRef: lukehertert_GitHub_Org
+                repoName: harness-buildpacks
+                build: <+input>
+    stages:
+        - stage:
+              name: Build
+              identifier: Build
+              type: CI
+              spec:
+                  cloneCodebase: true
+                  infrastructure:
+                      type: KubernetesDirect
+                      spec:
+                          connectorRef: laptopk8s
+                          namespace: default
+                          automountServiceAccountToken: true
+                          nodeSelector: {}
+                          os: Linux
+                  execution:
+                      steps:
+                          - step:
+                                type: BuildAndPushDockerRegistry
+                                name: Publish to DockerHub
+                                identifier: Publish_to_DockerHub
+                                spec:
+                                    connectorRef: account.Luke_Dockerhub
+                                    repo: ldhertert/harness-buildpacks
+                                    tags:
+                                        - dev-<+codebase.commitSha>
