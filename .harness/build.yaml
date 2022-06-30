@@ -1,5 +1,5 @@
 pipeline:
-    name: Harness Buildpacks Plugin Build
+    name: harness-buildpacks
     identifier: Harness_Buildpacks_Plugin_Build
     projectIdentifier: Plugins
     orgIdentifier: default
@@ -87,3 +87,6 @@ pipeline:
                   - name: version
                     type: String
                     value: 1.0.0
+    connectorRef: lukehertert_GitHub_Org
+    storeType: REMOTE
+    filePath: .harness/build.yaml
