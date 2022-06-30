@@ -98,6 +98,20 @@ pipeline:
                                                 format: spdx
                                                 image: ldhertert/harness-buildpacks
                                                 tag: main-15327eef34c941fcf8f836b4baf95c39d840fb7d
+                  serviceDependencies:
+                      - identifier: dind
+                        name: dind
+                        type: Service
+                        description: Docker in docker
+                        spec:
+                            connectorRef: account.Luke_Dockerhub
+                            image: docker:dind
+                            privileged: true
+                            entrypoint:
+                                - dockerd-entrypoint.sh
+                  sharedPaths:
+                      - /var/run
+                      - /step-outputs
               variables:
                   - name: container
                     type: String
