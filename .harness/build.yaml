@@ -34,7 +34,7 @@ pipeline:
                                 - step:
                                       type: BuildAndPushDockerRegistry
                                       name: Publish to DockerHub
-                                      identifier: Publish_to_DockerHub
+                                      identifier: dockerhub
                                       spec:
                                           connectorRef: account.Luke_Dockerhub
                                           repo: ldhertert/<+stage.variables.image>
@@ -85,6 +85,19 @@ pipeline:
                                           stageStatus: Success
                                           condition: <+pipeline.name> == "roger"
                                       failureStrategies: []
+                          - step:
+                                name: Generate SBOM
+                                identifier: sbom
+                                template:
+                                    templateRef: Generate_SBOM
+                                    versionLabel: v1
+                                    templateInputs:
+                                        type: Run
+                                        spec:
+                                            envVariables:
+                                                format: spdx
+                                                image: ldhertert/harness-buildpacks
+                                                tag: main-15327eef34c941fcf8f836b4baf95c39d840fb7d
               variables:
                   - name: container
                     type: String
