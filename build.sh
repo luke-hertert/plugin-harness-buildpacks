@@ -35,7 +35,7 @@ done
 [[ -z "${BUILDPACK}" ]] && BUILDPACK_ARG="" || BUILDPACK_ARG="--buildpack ${BUILDPACK}"
 
 PUBLISH_ARG=""
-if [[ $PUBLISH ]]; then
+if [[ $PUBLISH = "true" ]]; then
     echo ${PASSWORD} | docker login -u ${USERNAME} --password-stdin ${REGISTRY}
     PUBLISH_ARG+=" --publish "
 
