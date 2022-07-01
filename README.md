@@ -38,7 +38,7 @@ export PLUGIN_CACHE_IMAGE=ldhertert/go-echoserver-buildcache
 ```sh
 # Clone sample app to local machine
 git clone https://github.com/orian/go-echoserver /tmp/workspace
-export PLUGIN_WORKSPACE="/worspace"
+export PLUGIN_CWD="/workspace"
 
 docker run --rm \
     -v "/tmp/workspace:${PLUGIN_WORKSPACE}" \
