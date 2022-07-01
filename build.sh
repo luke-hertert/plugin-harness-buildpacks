@@ -55,7 +55,7 @@ echo "Building ${REPO}:${PRIMARY_TAG} from ${CWD}"
 echo 
 
 
-cmd="pack build ${REPO}:${PRIMARY_TAG} --path ${CWD} --builder ${BUILDER} ${BUILDPACK_ARG} ${TAG_ARG} ${PUBLISH_ARG} --sbom-output-dir /tmp/output"
+cmd="pack build ${REPO}:${PRIMARY_TAG} --path ${CWD} --builder ${BUILDER} ${BUILDPACK_ARG} ${TAG_ARG} ${PUBLISH_ARG} --sbom-output-dir /tmp/output --pull-policy if-not-present"
 echo "${cmd}"
 sh -c "${cmd}"
 rm -rf /tmp/output/cache

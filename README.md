@@ -71,6 +71,9 @@ export PLUGIN_PASSWORD='your docker password'
 
 # Cache build layers in remote registry. Requires --publish
 export PLUGIN_CACHE_IMAGE=ldhertert/go-echoserver-buildcache
+
+# Specify a directory where SBOMs should be exported to
+export PLUGIN_SBOM_DIR="/output"
 ```
 
 ### Running in docker
