@@ -36,22 +36,12 @@ pipeline:
                                     image: plugins/docker
                                     privileged: true
                                     settings:
-                                        dockerfile: Dockerfile
-                                        pull_image: false
                                         daemon_off: "true"
-                                        launch_debug: false
-                                        squash: false
-                                        bip: false
                                         tags: <+codebase.branch>-<+pipeline.sequenceId>
                                         username: ldhertert
                                         force_tag: false
-                                        purge: false
-                                        experimental: "true"
                                         repo: <+stage.variables.image>
-                                        debug: false
                                         password: <+secrets.getValue("account.Luke_Dockerhub_Password")>
-                                        insecure: false
-                                        auto_tag: "false"
                                         compress: false
                                         dry_run: "true"
                                 type: Plugin
@@ -69,7 +59,7 @@ pipeline:
                                         spec:
                                             envVariables:
                                                 image: <+stage.variables.image>
-                                                tag: <+codebase.branch>-<+pipeline.sequenceId>
+                                                tag: <+stage.variables.tags>
                                                 outputDir: /outputs
                           - parallel:
                                 - step:
@@ -84,31 +74,18 @@ pipeline:
                                           target: <+pipeline.identifier>/<+pipeline.executionId>/<+stage.identifier>
                                 - step:
                                       type: Plugin
-                                      name: Docker Push
-                                      identifier: docker_push
+                                      name: Push
+                                      identifier: Push
                                       spec:
-                                          connectorRef: account.Luke_Dockerhub
-                                          image: plugins/docker
+                                          connectorRef: Luke_Dockerhub
+                                          image: plugin/docker
                                           privileged: true
-                                      settings:
-                                          dockerfile: Dockerfile
-                                          pull_image: false
-                                          daemon_off: "true"
-                                          launch_debug: false
-                                          squash: false
-                                          bip: false
-                                          tags: <+codebase.branch>-<+pipeline.sequenceId>
-                                          username: ldhertert
-                                          force_tag: false
-                                          purge: false
-                                          experimental: "true"
-                                          repo: <+stage.variables.image>
-                                          debug: false
-                                          password: <+secrets.getValue("account.Luke_Dockerhub_Password")>
-                                          insecure: false
-                                          auto_tag: "false"
-                                          compress: false
-                                          dry_run: "false"
+                                          settings:
+                                              daemon_off: "true"
+                                              tags: <+stage.variables.tags>
+                                              username: ldhertert
+                                              repo: <+stage.variables.image>
+                                              password: <+secrets.getValue("account.Luke_Dockerhub_Password")>
                   serviceDependencies:
                       - identifier: dind
                         name: dind
@@ -134,4 +111,7 @@ pipeline:
                   - name: version
                     type: String
                     value: 1.0.0
+                  - name: tags
+                    type: String
+                    value: <+codebase.branch>-<+pipeline.sequenceId>
     storeType: REMOTE
