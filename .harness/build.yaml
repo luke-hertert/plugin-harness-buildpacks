@@ -58,31 +58,20 @@ pipeline:
                                                 image: <+stage.variables.image>
                                                 tag: <+stage.variables.tags>
                                                 outputDir: /outputs
-                          - parallel:
-                                - step:
-                                      type: S3Upload
-                                      name: Upload SBOMs
-                                      identifier: uploadSBOM
-                                      spec:
-                                          connectorRef: Harness_AWS
-                                          region: us-east-1
-                                          bucket: luke-artifacts
-                                          sourcePath: /outputs/**/*.json
-                                          target: <+pipeline.identifier>/<+pipeline.executionId>/<+stage.identifier>
-                                - step:
-                                      type: Plugin
-                                      name: Push
-                                      identifier: Push
-                                      spec:
-                                          connectorRef: Luke_Dockerhub
-                                          image: plugin/docker
-                                          privileged: true
-                                          settings:
-                                              daemon_off: "true"
-                                              tags: <+stage.variables.tags>
-                                              username: ldhertert
-                                              repo: <+stage.variables.image>
-                                              password: <+secrets.getValue("account.Luke_Dockerhub_Password")>
+                          - step:
+                                type: Plugin
+                                name: Push
+                                identifier: Push
+                                spec:
+                                    connectorRef: Luke_Dockerhub
+                                    image: plugin/docker
+                                    privileged: true
+                                    settings:
+                                        daemon_off: "true"
+                                        tags: <+stage.variables.tags>
+                                        username: ldhertert
+                                        repo: <+stage.variables.image>
+                                        password: <+secrets.getValue("account.Luke_Dockerhub_Password")>
                   serviceDependencies:
                       - identifier: dind
                         name: dind
