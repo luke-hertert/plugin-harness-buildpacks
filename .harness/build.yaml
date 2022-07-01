@@ -113,5 +113,5 @@ pipeline:
                     value: 1.0.0
                   - name: tags
                     type: String
-                    value: <+pipeline.name>-<+pipeline.sequenceId>
+                    value: <+pipeline.identifier>/<+pipeline.executionId>/<+stage.identifier>
     storeType: REMOTE
