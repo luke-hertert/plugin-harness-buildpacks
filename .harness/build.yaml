@@ -57,84 +57,7 @@ pipeline:
                                 type: Plugin
                                 name: Docker Build
                                 identifier: Docker_Build
-                                failureStrategies:
-                                    - onFailure:
-                                          errors:
-                                              - AllErrors
-                                          action:
-                                              type: ManualIntervention
-                                              spec:
-                                                  onTimeout:
-                                                      action:
-                                                          type: MarkAsSuccess
-                                                  timeout: 1w
-                          - step:
-                                type: Run
-                                name: Docker inspection
-                                identifier: Docker_inspection
-                                spec:
-                                    connectorRef: account.Luke_Dockerhub
-                                    image: docker:dind
-                                    shell: Sh
-                                    command: |-
-                                        docker ps
-                                        docker images
-                                        docker inspect ldhertert/harness-buildpacks:latest
-                          - parallel:
-                                - step:
-                                      type: BuildAndPushDockerRegistry
-                                      name: Publish to DockerHub
-                                      identifier: dockerhub
-                                      spec:
-                                          connectorRef: account.Luke_Dockerhub
-                                          repo: ldhertert/<+stage.variables.image>
-                                          tags:
-                                              - <+codebase.branch>-<+codebase.commitSha>
-                                          labels:
-                                              org.opencontainers.image.created: <+pipeline.startTs>
-                                              org.opencontainers.image.authors: luke.hertert@harness.io
-                                              org.opencontainers.image.url: https://hub.docker.com/repository/docker/ldhertert/harness-buildpacks
-                                              org.opencontainers.image.documentation: https://github.com/luke-hertert/harness-buildpacks#readme
-                                              org.opencontainers.image.source: https://github.com/luke-hertert/harness-buildpacks
-                                              org.opencontainers.image.version: <+stage.variables.version>
-                                              org.opencontainers.image.revision: <+codebase.commitSha>
-                                              org.opencontainers.image.vendor: Harness
-                                              org.opencontainers.image.licenses: Apache 2.0
-                                              org.opencontainers.image.title: Harness Buildpack CI plugin
-                                              org.opencontainers.image.description: A Harness CI plugin that uses cloud native buildpacks to build docker images.
-                                              org.opencontainers.image.base.digest: todo
-                                              org.opencontainers.image.base.name: index.docker.io/library/docker:dind
-                                      when:
-                                          stageStatus: Success
-                                          condition: <+pipeline.name> == "frank"
-                                      failureStrategies: []
-                                - step:
-                                      type: BuildAndPushDockerRegistry
-                                      name: Publish to Github Container Registry
-                                      identifier: ghcr
-                                      spec:
-                                          connectorRef: Github_Container_Registry_lukehertert_org
-                                          repo: ghcr.io/luke-hertert/<+stage.variables.image>
-                                          tags:
-                                              - <+codebase.branch>-<+codebase.commitSha>
-                                          labels:
-                                              org.opencontainers.image.created: <+pipeline.startTs>
-                                              org.opencontainers.image.authors: luke.hertert@harness.io
-                                              org.opencontainers.image.url: https://github.com/luke-hertert/harness-buildpacks/pkgs/container/harness-buildpacks
-                                              org.opencontainers.image.documentation: https://github.com/luke-hertert/harness-buildpacks#readme
-                                              org.opencontainers.image.source: https://github.com/luke-hertert/harness-buildpacks
-                                              org.opencontainers.image.version: <+stage.variables.version>
-                                              org.opencontainers.image.revision: <+codebase.commitSha>
-                                              org.opencontainers.image.vendor: Harness
-                                              org.opencontainers.image.licenses: Apache 2.0
-                                              org.opencontainers.image.title: Harness Buildpack CI plugin
-                                              org.opencontainers.image.description: A Harness CI plugin that uses cloud native buildpacks to build docker images.
-                                              org.opencontainers.image.base.digest: todo
-                                              org.opencontainers.image.base.name: index.docker.io/library/docker:dind
-                                      when:
-                                          stageStatus: Success
-                                          condition: <+pipeline.name> == "frank"
-                                      failureStrategies: []
+                                failureStrategies: []
                           - step:
                                 type: S3Upload
                                 name: Upload SBOMs
@@ -149,6 +72,34 @@ pipeline:
                                 when:
                                     stageStatus: Success
                                     condition: <+pipeline.name> == "frank"
+                          - step:
+                                spec:
+                                    connectorRef: account.Luke_Dockerhub
+                                    image: plugins/docker
+                                    privileged: true
+                                    settings:
+                                        dockerfile: Dockerfile
+                                        pull_image: false
+                                        daemon_off: "true"
+                                        launch_debug: false
+                                        squash: false
+                                        bip: false
+                                        tags: <+pipeline.sequenceId>
+                                        username: ldhertert
+                                        force_tag: false
+                                        purge: false
+                                        experimental: "true"
+                                        repo: <+stage.variables.image>
+                                        debug: false
+                                        password: <+secrets.getValue("account.Luke_Dockerhub_Password")>
+                                        insecure: false
+                                        auto_tag: "true"
+                                        compress: false
+                                        dry_run: "false"
+                                type: Plugin
+                                name: Docker Push
+                                identifier: docker_push
+                                failureStrategies: []
                   serviceDependencies:
                       - identifier: dind
                         name: dind
