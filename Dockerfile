@@ -13,8 +13,12 @@ ENV PLUGIN_TAG="latest"
 ENV PLUGIN_BUILDER="gcr.io/paketo-buildpacks/builder:base"
 ENV PLUGIN_BUILDPACK=""
 ENV PLUGIN_CWD="./"
+ENV PLUGIN_PUBLISH="false"
+ENV PLUGIN_REGISTRY="docker.io"
+ENV PLUGIN_USERNAME=""
+ENV PLUGIN_PASSWORD=""
+ENV PLUGIN_CACHE_IMAGE=""
 
 COPY build.sh /build.sh
-RUN chmod +x /build.sh
 
 CMD [ "/build.sh" ]
