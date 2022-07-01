@@ -38,7 +38,7 @@ pipeline:
                                     settings:
                                         dockerfile: Dockerfile
                                         pull_image: false
-                                        daemon_off: false
+                                        daemon_off: "true"
                                         launch_debug: false
                                         squash: false
                                         bip: false
