@@ -38,7 +38,7 @@ pipeline:
                                     connectorRef: Luke_Dockerhub
                                     image: alpine
                                     shell: Sh
-                                    command: export tags="<+pipeline.name>_<+pipeline.sequenceId>"
+                                    command: export tags="<+pipeline.name>-<+pipeline.sequenceId>"
                                     outputVariables:
                                         - name: tags
                           - step:
@@ -122,4 +122,3 @@ pipeline:
                   - name: version
                     type: String
                     value: 1.0.0
-    storeType: REMOTE
