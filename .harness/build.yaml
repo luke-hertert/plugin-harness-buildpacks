@@ -38,7 +38,7 @@ pipeline:
                                     connectorRef: Luke_Dockerhub
                                     image: alpine
                                     shell: Sh
-                                    command: export tags="buildpack-builder-<+pipeline.sequenceId>"
+                                    command: export tags="<+pipeline.sequenceId> latest"
                                     outputVariables:
                                         - name: tags
                           - step:
