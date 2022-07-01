@@ -42,7 +42,7 @@ pipeline:
                                         launch_debug: false
                                         squash: false
                                         bip: false
-                                        tags: <+pipeline.sequenceId>
+                                        tags: <+codebase.branch>-<+pipeline.sequenceId>
                                         username: ldhertert
                                         force_tag: false
                                         purge: false
@@ -51,13 +51,26 @@ pipeline:
                                         debug: false
                                         password: <+secrets.getValue("account.Luke_Dockerhub_Password")>
                                         insecure: false
-                                        auto_tag: "true"
+                                        auto_tag: "false"
                                         compress: false
                                         dry_run: "true"
                                 type: Plugin
                                 name: Docker Build
                                 identifier: Docker_Build
                                 failureStrategies: []
+                          - step:
+                                name: Generate SBOM
+                                identifier: Generate_SBOM
+                                template:
+                                    templateRef: Generate_SBOM
+                                    versionLabel: v1
+                                    templateInputs:
+                                        type: Run
+                                        spec:
+                                            envVariables:
+                                                image: <+stage.variables.image>
+                                                tag: <+codebase.branch>-<+pipeline.sequenceId>
+                                                outputDir: /outputs
                           - step:
                                 type: S3Upload
                                 name: Upload SBOMs
@@ -66,12 +79,8 @@ pipeline:
                                     connectorRef: Harness_AWS
                                     region: us-east-1
                                     bucket: luke-artifacts
-                                    sourcePath: /step-outputs/**/*.json
+                                    sourcePath: /outputs/**/*.json
                                     target: <+pipeline.identifier>/<+pipeline.executionId>/<+stage.identifier>
-                                failureStrategies: []
-                                when:
-                                    stageStatus: Success
-                                    condition: <+pipeline.name> == "frank"
                           - step:
                                 spec:
                                     connectorRef: account.Luke_Dockerhub
@@ -84,7 +93,7 @@ pipeline:
                                         launch_debug: false
                                         squash: false
                                         bip: false
-                                        tags: <+pipeline.sequenceId>
+                                        tags: <+codebase.branch>-<+pipeline.sequenceId>
                                         username: ldhertert
                                         force_tag: false
                                         purge: false
@@ -93,7 +102,7 @@ pipeline:
                                         debug: false
                                         password: <+secrets.getValue("account.Luke_Dockerhub_Password")>
                                         insecure: false
-                                        auto_tag: "true"
+                                        auto_tag: "false"
                                         compress: false
                                         dry_run: "false"
                                 type: Plugin
