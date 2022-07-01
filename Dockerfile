@@ -8,7 +8,7 @@ RUN apk add --update --no-cache wget curl bash
 # Download buildpack cli
 RUN wget -qO- https://github.com/buildpacks/pack/releases/download/${VERSION}/pack-${VERSION}-linux.tgz | tar xvz -C /usr/bin
 
-ENV PLUGIN_REPO="unknown"
+ENV PLUGIN_REPO="https://github.com/luke-hertert/plugin-harness-buildpacks"
 ENV PLUGIN_TAG="latest"
 ENV PLUGIN_BUILDER="gcr.io/paketo-buildpacks/builder:base"
 ENV PLUGIN_BUILDPACK=""

@@ -1,6 +1,45 @@
 
 # Usage
 
+### Example Harness step YAML
+
+```yaml
+- step:
+  type: Plugin
+  name: Build and push to Dockerhub
+  description: Use buildpacks to build and publish docker image
+  identifier: buildAndPush
+  spec:
+    connectorRef: dockerhub
+    image: ldhertert/harness-buildpacks:latest
+    privileged: true
+    settings:
+      repo: ldhertert/go-sample-app
+      tag: latest <+pipeline.sequenceId>
+      builder: paketobuildpacks/builder:tiny
+      username: ldhertert
+      password: <+secrets.getValue("account.dockerhubPassword")>
+      publish: true
+      artifact_file: /harness/artifact/artifacts.json
+      cache_image: ldhertert/go-sample-app-buildcache      
+```
+
+Be sure to also include a docker in docker service dependency.  For example:
+
+```yaml
+serviceDependencies:
+- identifier: dind
+  name: dind
+  type: Service
+  description: Docker in docker
+  spec:
+    connectorRef: dockerhub
+    image: docker:dind
+    privileged: true
+    entrypoint:
+      - dockerd-entrypoint.sh
+```
+
 ### Options
 ```sh
 #The destination docker repostory 

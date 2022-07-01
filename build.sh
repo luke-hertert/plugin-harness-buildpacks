@@ -63,14 +63,15 @@ rm -rf /tmp/output/cache
 
 if [[ $PUBLISH ]]; then
     if [[ $PLUGIN_ARTIFACT_FILE ]]; then
+        mkdir -p $(dirname $PLUGIN_ARTIFACT_FILE)
         cat >$PLUGIN_ARTIFACT_FILE << EOF
 {
     "kind": "fileUpload/v1",
     "data": {
         "fileArtifacts": [
             {
-                "name": "${REPO}:${PRIMARY_TAG}",
-                "url": "true"
+                "name": "Docker",
+                "url": "https://${REPO}:${PRIMARY_TAG}"
             }
         ]
     }
