@@ -9,7 +9,10 @@ pipeline:
             codebase:
                 connectorRef: lukehertert_GitHub_Org
                 repoName: harness-buildpacks
-                build: <+input>
+                build:
+                    type: branch
+                    spec:
+                        branch: main
     stages:
         - stage:
               name: Build
@@ -58,20 +61,31 @@ pipeline:
                                                 image: <+stage.variables.image>
                                                 tag: <+stage.variables.tags>
                                                 outputDir: /outputs
-                          - step:
-                                type: Plugin
-                                name: Push
-                                identifier: Push
-                                spec:
-                                    connectorRef: Luke_Dockerhub
-                                    image: plugin/docker
-                                    privileged: true
-                                    settings:
-                                        daemon_off: "true"
-                                        tags: <+stage.variables.tags>
-                                        username: ldhertert
-                                        repo: <+stage.variables.image>
-                                        password: <+secrets.getValue("account.Luke_Dockerhub_Password")>
+                          - parallel:
+                                - step:
+                                      type: S3Upload
+                                      name: Upload SBOMs
+                                      identifier: uploadSBOM
+                                      spec:
+                                          connectorRef: Harness_AWS
+                                          region: us-east-1
+                                          bucket: luke-artifacts
+                                          sourcePath: /outputs/**/*.json
+                                          target: <+pipeline.identifier>/<+pipeline.executionId>/<+stage.identifier>
+                                - step:
+                                      type: Plugin
+                                      name: Push
+                                      identifier: Push
+                                      spec:
+                                          connectorRef: Luke_Dockerhub
+                                          image: plugin/docker
+                                          privileged: true
+                                          settings:
+                                              daemon_off: "true"
+                                              tags: <+stage.variables.tags>
+                                              username: ldhertert
+                                              repo: <+stage.variables.image>
+                                              password: <+secrets.getValue("account.Luke_Dockerhub_Password")>
                   serviceDependencies:
                       - identifier: dind
                         name: dind
@@ -99,5 +113,5 @@ pipeline:
                     value: 1.0.0
                   - name: tags
                     type: String
-                    value: <+codebase.branch>-<+pipeline.sequenceId>
+                    value: <+pipeline.name>-<+pipeline.sequenceId>
     storeType: REMOTE
