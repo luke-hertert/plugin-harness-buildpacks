@@ -21,7 +21,7 @@ export PLUGIN_CWD=./
 #####The following options are only necessary if you want to publish to a target registry in addition to building
 
 # Publish to registry
-export PLUGIN_PUBLISH=true
+export PLUGIN_PUBLISH=""
 
 # Registry to push to. (optional, defaults to docker.io)
 export PLUGIN_REGISTRY=docker.io
