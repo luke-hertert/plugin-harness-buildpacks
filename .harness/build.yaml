@@ -78,7 +78,7 @@ pipeline:
                                       identifier: Push
                                       spec:
                                           connectorRef: Luke_Dockerhub
-                                          image: plugin/docker
+                                          image: plugins/docker
                                           privileged: true
                                           settings:
                                               daemon_off: "true"
