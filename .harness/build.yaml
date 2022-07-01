@@ -31,6 +31,17 @@ pipeline:
                   execution:
                       steps:
                           - step:
+                                type: Run
+                                name: Set Tags
+                                identifier: Set_Tags
+                                spec:
+                                    connectorRef: Luke_Dockerhub
+                                    image: alpine
+                                    shell: Sh
+                                    command: export tags="<+pipeline.name>_<+pipeline.sequenceId>"
+                                    outputVariables:
+                                        - name: tags
+                          - step:
                                 spec:
                                     connectorRef: account.Luke_Dockerhub
                                     image: plugins/docker
@@ -111,7 +122,4 @@ pipeline:
                   - name: version
                     type: String
                     value: 1.0.0
-                  - name: tags
-                    type: String
-                    value: <+pipeline.identifier>/<+pipeline.executionId>/<+stage.identifier>
     storeType: REMOTE
