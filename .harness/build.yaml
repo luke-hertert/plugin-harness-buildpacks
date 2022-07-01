@@ -31,94 +31,17 @@ pipeline:
                   execution:
                       steps:
                           - step:
-                                type: Run
-                                name: Set Tags
-                                identifier: set_tags
+                                type: BuildAndPushDockerRegistry
+                                name: Build and Push
+                                identifier: Build_and_Push
                                 spec:
                                     connectorRef: Luke_Dockerhub
-                                    image: alpine
-                                    shell: Sh
-                                    command: export tags="<+pipeline.sequenceId>,latest"
-                                    outputVariables:
-                                        - name: tags
-                          - step:
-                                spec:
-                                    connectorRef: account.Luke_Dockerhub
-                                    image: plugins/docker
-                                    privileged: true
-                                    settings:
-                                        daemon_off: "true"
-                                        tags: <+execution.steps.set_tags.output.outputVariables.tags>
-                                        username: ldhertert
-                                        force_tag: false
-                                        repo: <+stage.variables.image>
-                                        password: <+secrets.getValue("account.Luke_Dockerhub_Password")>
-                                        compress: false
-                                        dry_run: "true"
-                                type: Plugin
-                                name: Docker Build
-                                identifier: Docker_Build
+                                    repo: ldhertert/harness-buildpacks
+                                    tags:
+                                        - latest
+                                        - <+pipeline.sequenceId>
                                 failureStrategies: []
-                          - step:
-                                name: Generate SBOM
-                                identifier: Generate_SBOM
-                                template:
-                                    templateRef: Generate_SBOM
-                                    versionLabel: v1
-                                    templateInputs:
-                                        type: Run
-                                        spec:
-                                            envVariables:
-                                                image: <+stage.variables.image>
-                                                tag: <+execution.steps.set_tags.output.outputVariables.tags>
-                                                outputDir: /outputs
-                          - parallel:
-                                - step:
-                                      type: S3Upload
-                                      name: Upload SBOMs
-                                      identifier: uploadSBOM
-                                      spec:
-                                          connectorRef: Harness_AWS
-                                          region: us-east-1
-                                          bucket: luke-artifacts
-                                          sourcePath: /outputs/**/*.json
-                                          target: <+pipeline.identifier>/<+pipeline.executionId>/<+stage.identifier>
-                                - step:
-                                      type: Plugin
-                                      name: Push
-                                      identifier: Push
-                                      spec:
-                                          connectorRef: Luke_Dockerhub
-                                          image: plugins/docker
-                                          privileged: true
-                                          settings:
-                                              daemon_off: "true"
-                                              tags: <+execution.steps.set_tags.output.outputVariables.tags>
-                                              username: ldhertert
-                                              repo: <+stage.variables.image>
-                                              password: <+secrets.getValue("account.Luke_Dockerhub_Password")>
-                  serviceDependencies:
-                      - identifier: dind
-                        name: dind
-                        type: Service
-                        description: Docker in docker
-                        spec:
-                            connectorRef: account.Luke_Dockerhub
-                            image: docker:dind
-                            privileged: true
-                            entrypoint:
-                                - dockerd-entrypoint.sh
-                  sharedPaths:
-                      - /var/run
-                      - /outputs
-                      - /tmp
               variables:
                   - name: container
                     type: String
                     value: docker
-                  - name: image
-                    type: String
-                    value: ldhertert/harness-buildpacks
-                  - name: version
-                    type: String
-                    value: 1.0.0
