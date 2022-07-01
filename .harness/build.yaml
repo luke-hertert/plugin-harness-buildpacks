@@ -57,6 +57,17 @@ pipeline:
                                 type: Plugin
                                 name: Docker stuff
                                 identifier: Docker_stuff
+                                failureStrategies:
+                                    - onFailure:
+                                          errors:
+                                              - AllErrors
+                                          action:
+                                              type: ManualIntervention
+                                              spec:
+                                                  onTimeout:
+                                                      action:
+                                                          type: MarkAsSuccess
+                                                  timeout: 1w
                           - parallel:
                                 - step:
                                       type: BuildAndPushDockerRegistry
@@ -83,7 +94,7 @@ pipeline:
                                               org.opencontainers.image.base.name: index.docker.io/library/docker:dind
                                       when:
                                           stageStatus: Success
-                                          condition: <+pipeline.name> == "frank">
+                                          condition: <+pipeline.name> == "frank"
                                       failureStrategies: []
                                 - step:
                                       type: BuildAndPushDockerRegistry
@@ -110,7 +121,7 @@ pipeline:
                                               org.opencontainers.image.base.name: index.docker.io/library/docker:dind
                                       when:
                                           stageStatus: Success
-                                          condition: <+pipeline.name> == "frank">
+                                          condition: <+pipeline.name> == "frank"
                                       failureStrategies: []
                           - step:
                                 type: S3Upload
@@ -125,7 +136,7 @@ pipeline:
                                 failureStrategies: []
                                 when:
                                     stageStatus: Success
-                                    condition: <+pipeline.name> == "frank">
+                                    condition: <+pipeline.name> == "frank"
                   serviceDependencies:
                       - identifier: dind
                         name: dind
