@@ -15,5 +15,6 @@ ENV PLUGIN_BUILDPACK=""
 ENV PLUGIN_CWD="./"
 
 COPY build.sh /build.sh
+RUN chmod +x /build.sh
 
 CMD [ "/build.sh" ]
