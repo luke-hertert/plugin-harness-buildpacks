@@ -20,5 +20,6 @@ ENV PLUGIN_PASSWORD=""
 ENV PLUGIN_CACHE_IMAGE=""
 
 COPY build.sh /build.sh
+RUN chmod +x /build.sh
 
 CMD [ "/build.sh" ]
