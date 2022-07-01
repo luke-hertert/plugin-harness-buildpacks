@@ -31,20 +31,32 @@ pipeline:
                   execution:
                       steps:
                           - step:
-                                name: Docker build
-                                identifier: Docker_build
-                                template:
-                                    templateRef: drone_docker
-                                    versionLabel: v1
-                                    templateInputs:
-                                        type: Plugin
-                                        spec:
-                                            connectorRef: account.Luke_Dockerhub
-                                            settings:
-                                                tags: <+codebase.branch>-<+codebase.commitSha>
-                                                username: ldhertert
-                                                repo: ldhertert/
-                                                password: <+secrets.getValue("account.Luke_Dockerhub_Password")>
+                                spec:
+                                    connectorRef: account.Luke_Dockerhub
+                                    image: plugins/docker
+                                    privileged: true
+                                    settings:
+                                        dockerfile: Dockerfile
+                                        pull_image: false
+                                        daemon_off: false
+                                        launch_debug: false
+                                        squash: false
+                                        bip: false
+                                        tags: <+pipeline.sequenceId>
+                                        username: ldhertert
+                                        force_tag: false
+                                        purge: false
+                                        experimental: "true"
+                                        repo: <+stage.variables.image>
+                                        debug: false
+                                        password: <+secrets.getValue("account.Luke_Dockerhub_Password")>
+                                        insecure: false
+                                        auto_tag: "true"
+                                        compress: false
+                                        dry_run: "true"
+                                type: Plugin
+                                name: Docker stuff
+                                identifier: Docker_stuff
                           - parallel:
                                 - step:
                                       type: BuildAndPushDockerRegistry
@@ -71,6 +83,7 @@ pipeline:
                                               org.opencontainers.image.base.name: index.docker.io/library/docker:dind
                                       when:
                                           stageStatus: Success
+                                          condition: <+pipeline.name> == "frank">
                                       failureStrategies: []
                                 - step:
                                       type: BuildAndPushDockerRegistry
@@ -97,20 +110,8 @@ pipeline:
                                               org.opencontainers.image.base.name: index.docker.io/library/docker:dind
                                       when:
                                           stageStatus: Success
+                                          condition: <+pipeline.name> == "frank">
                                       failureStrategies: []
-                          - step:
-                                name: Generate SBOM
-                                identifier: sbom
-                                template:
-                                    templateRef: Generate_SBOM
-                                    versionLabel: v1
-                                    templateInputs:
-                                        type: Run
-                                        spec:
-                                            envVariables:
-                                                image: <+pipeline.stages.Build.spec.execution.steps.dockerhub.artifact-dockerhub.stepArtifacts.publishedImageArtifacts[0].imageName>
-                                                tag: <+pipeline.stages.Build.spec.execution.steps.dockerhub.artifact-dockerhub.stepArtifacts.publishedImageArtifacts[0].tag>
-                                                outputDir: /step-outputs/sbom
                           - step:
                                 type: S3Upload
                                 name: Upload SBOMs
@@ -122,6 +123,9 @@ pipeline:
                                     sourcePath: /step-outputs/**/*.json
                                     target: <+pipeline.identifier>/<+pipeline.executionId>/<+stage.identifier>
                                 failureStrategies: []
+                                when:
+                                    stageStatus: Success
+                                    condition: <+pipeline.name> == "frank">
                   serviceDependencies:
                       - identifier: dind
                         name: dind
@@ -135,14 +139,15 @@ pipeline:
                                 - dockerd-entrypoint.sh
                   sharedPaths:
                       - /var/run
-                      - /step-outputs
+                      - /outputs
+                      - /tmp
               variables:
                   - name: container
                     type: String
                     value: docker
                   - name: image
                     type: String
-                    value: harness-buildpacks
+                    value: ldhertert/harness-buildpacks
                   - name: version
                     type: String
                     value: 1.0.0
