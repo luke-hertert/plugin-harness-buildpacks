@@ -55,8 +55,8 @@ pipeline:
                                         compress: false
                                         dry_run: "true"
                                 type: Plugin
-                                name: Docker stuff
-                                identifier: Docker_stuff
+                                name: Docker Build
+                                identifier: Docker_Build
                                 failureStrategies:
                                     - onFailure:
                                           errors:
@@ -68,6 +68,18 @@ pipeline:
                                                       action:
                                                           type: MarkAsSuccess
                                                   timeout: 1w
+                          - step:
+                                type: Run
+                                name: Docker inspection
+                                identifier: Docker_inspection
+                                spec:
+                                    connectorRef: account.Luke_Dockerhub
+                                    image: docker:dind
+                                    shell: Sh
+                                    command: |-
+                                        docker ps
+                                        docker images
+                                        docker inspect ldhertert/harness-buildpacks:latest
                           - parallel:
                                 - step:
                                       type: BuildAndPushDockerRegistry
