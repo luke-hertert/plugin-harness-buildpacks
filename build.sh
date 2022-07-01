@@ -12,6 +12,7 @@ REGISTRY=${PLUGIN_REGISTRY:=docker.io}
 USERNAME=$PLUGIN_USERNAME
 PASSWORD=$PLUGIN_PASSWORD
 CACHE_IMAGE=$PLUGIN_CACHE_IMAGE
+SBOM_DIR=${PLUGIN_SBOM_DIR:=/tmp/sbom}
 
 # Test docker socket
 if (! docker stats --no-stream &> /dev/null); then
@@ -55,10 +56,10 @@ echo "Building ${REPO}:${PRIMARY_TAG} from ${CWD}"
 echo 
 
 
-cmd="pack build ${REPO}:${PRIMARY_TAG} --path ${CWD} --builder ${BUILDER} ${BUILDPACK_ARG} ${TAG_ARG} ${PUBLISH_ARG} --sbom-output-dir /tmp/output --pull-policy if-not-present"
-echo "${cmd}"
+cmd="pack build ${REPO}:${PRIMARY_TAG} --path ${CWD} --builder ${BUILDER} ${BUILDPACK_ARG} ${TAG_ARG} ${PUBLISH_ARG} --sbom-output-dir ${SBOM_DIR} --pull-policy if-not-present"
+
 sh -c "${cmd}"
-rm -rf /tmp/output/cache
+rm -rf $SBOM_DIR/cache
 #find /tmp/output -name "*.json"
 
 if [[ $PUBLISH ]]; then
