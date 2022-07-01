@@ -41,7 +41,7 @@ git clone https://github.com/orian/go-echoserver /tmp/workspace
 export PLUGIN_CWD="/workspace"
 
 docker run --rm \
-    -v "/tmp/workspace:${PLUGIN_WORKSPACE}" \
+    -v "/tmp/workspace:${PLUGIN_CWD}" \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -e PLUGIN_REPO="${PLUGIN_REPO}" \
     -e PLUGIN_TAG="${PLUGIN_TAG}" \
