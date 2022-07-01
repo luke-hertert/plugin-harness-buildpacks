@@ -36,7 +36,7 @@ done
 
 PUBLISH_ARG=""
 if [[ $PUBLISH ]]; then
-    docker login -u ${USERNAME} -p ${PASSWORD} ${REGISTRY}
+    echo ${PASSWORD} | docker login -u ${USERNAME} --password-stdin ${REGISTRY}
     PUBLISH_ARG+=" --publish "
 
     if [[ $REPO != "${REGISTRY}"* ]]; then
@@ -60,3 +60,21 @@ echo "${cmd}"
 sh -c "${cmd}"
 rm -rf /tmp/output/cache
 #find /tmp/output -name "*.json"
+
+if [[ $PUBLISH ]]; then
+    if [[ $PLUGIN_ARTIFACT_FILE ]]; then
+        cat >$PLUGIN_ARTIFACT_FILE << EOF
+{
+    "kind": "fileUpload/v1",
+    "data": {
+        "fileArtifacts": [
+            {
+                "name": "${REPO}:${PRIMARY_TAG}",
+                "url": "true"
+            }
+        ]
+    }
+} 
+EOF
+    fi
+fi
