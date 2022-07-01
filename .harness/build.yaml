@@ -33,7 +33,7 @@ pipeline:
                           - step:
                                 type: Run
                                 name: Set Tags
-                                identifier: Set_Tags
+                                identifier: set_tags
                                 spec:
                                     connectorRef: Luke_Dockerhub
                                     image: alpine
@@ -48,7 +48,7 @@ pipeline:
                                     privileged: true
                                     settings:
                                         daemon_off: "true"
-                                        tags: <+stage.variables.tags>
+                                        tags: <+execution.steps.set_tags.output.outputVariables.tags>
                                         username: ldhertert
                                         force_tag: false
                                         repo: <+stage.variables.image>
@@ -70,7 +70,7 @@ pipeline:
                                         spec:
                                             envVariables:
                                                 image: <+stage.variables.image>
-                                                tag: <+stage.variables.tags>
+                                                tag: <+execution.steps.set_tags.output.outputVariables.tags>
                                                 outputDir: /outputs
                           - parallel:
                                 - step:
@@ -93,7 +93,7 @@ pipeline:
                                           privileged: true
                                           settings:
                                               daemon_off: "true"
-                                              tags: <+stage.variables.tags>
+                                              tags: <+execution.steps.set_tags.output.outputVariables.tags>
                                               username: ldhertert
                                               repo: <+stage.variables.image>
                                               password: <+secrets.getValue("account.Luke_Dockerhub_Password")>
@@ -122,7 +122,4 @@ pipeline:
                   - name: version
                     type: String
                     value: 1.0.0
-                  - name: tags
-                    type: String
-                    value: <+pipeline.identifier>_<+pipeline.sequenceId>
     storeType: REMOTE
